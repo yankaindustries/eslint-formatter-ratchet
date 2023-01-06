@@ -56,12 +56,20 @@ module.exports = function (results, context, logger = console) {
     console.log(tableFormatter(results));
   }
 
+  const allIssues = { ...previousIssues, ...latestIssues };
+  const sortedIssues = Object.keys(allIssues)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = allIssues[key];
+      return obj;
+    }, {});
+
   // Store these latest results up front.
   // These are mentioned in the logging whenever counts increase and allow for easy updating
   // when those increases were expected.
   fs.writeFileSync(
     "./eslint-ratchet-temp.json",
-    JSON.stringify({ ...previousIssues, ...latestIssues }, null, 2)
+    JSON.stringify(sortedIssues, null, 2)
   );
 
   // Perform a basic check to see if anything has changed
